@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FZIOMED Signaling Radar</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg-base: #081505;
+      --bg-detail: #0D1F0A;
+      --lime: #B5F33D;
+      --lime-mid: #7FB820;
+      --lime-dark: #4A7012;
+      --text-muted: #A0B090;
+      --text-dim: #7A8B6A;
+      --text-vdim: #5A7048;
+    }
+    body {
+      margin: 0;
+      background: var(--bg-base);
+      background-image:
+        linear-gradient(rgba(181,243,61,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(181,243,61,0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+      color: white;
+      font-family: "Geist", "Inter", system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    .font-mono {
+      font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    *::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    *::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.02);
+    }
+    *::-webkit-scrollbar-thumb {
+      background: rgba(181,243,61,0.15);
+      border-radius: 4px;
+    }
+    *::-webkit-scrollbar-thumb:hover {
+      background: rgba(181,243,61,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    // ============================================================
+    // DATA — injected at build time
+    // ============================================================
+    const PRIORITY_DATA = [{"rank": 1, "lead_id": 1, "lead_company": "Smith & Nephew", "lead_domain": "smith-nephew.com", "lead_type": "Sports Med / Ortho", "consolidated_priority_score": 86, "priority_tier": "Tier 1 / Highest priority", "number_of_unique_signals": 3, "signal_types_present": "Company news signal; Topic-to-lead market signal", "source_agents_present": "Company News Mapper; Topic News Mapper", "strongest_signal_score": 87, "strongest_signal_headline_or_title": "Smith+Nephew strengthens shoulder repair portfolio with acquisition of Integrity Orthopaedics", "strongest_signal_date": "2026-01-12", "primary_fziomed_bucket": "Tendon / Hand / Peripheral Nerve", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 3 included signal(s), led by: Smith+Nephew strengthens shoulder repair portfolio with acquisition of Integrity Orthopaedics.", "key_signal_summary": "Smith+Nephew strengthens shoulder repair portfolio with acquisition of Integrity Orthopaedics (2026-01-12; score 87); KARL STORZ and Smith+Nephew announce strategic relationship in sports medicine (2026-02-12; score 78); Smith+Nephew highlights newly acquired Tendon Seam and AAOS support for bioinductive implants in rotator cuff repair (2026-03-02; score 76)", "manager_interpretation": "Direct sports medicine/OR portfolio expansion around soft-tissue repair; supports outreach around adjunct products that reduce post-surgical complications in shoulder/sports med procedures.", "confidence_level": "High", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "Smith+Nephew strengthens shoulder repair portfolio with acquisition of Integrity Orthopaedics (2026-01-12; score 87); KARL STORZ and Smith+Nephew announce strategic relationship in sports medicine (2026-02-12; score 78)", "paper_funding_summary": null, "topic_news_summary": "Smith+Nephew highlights newly acquired Tendon Seam and AAOS support for bioinductive implants in rotator cuff repair (2026-03-02; score 76)", "categories_with_no_findings": "Paper / Funding", "lead_source": "Watchlist", "strongest_signal_url": "https://www.smith-nephew.com/en/news/2026/01/12/smithnephew-strengthens-shoulder-repair-portfolio-with-acquisition"}, {"rank": 2, "lead_id": 14, "lead_company": "Karl Storz", "lead_domain": "karlstorz.com", "lead_type": "Endoscopic Instrumentation", "consolidated_priority_score": 80, "priority_tier": "Tier 2 / High priority", "number_of_unique_signals": 1, "signal_types_present": "Topic-to-lead market signal", "source_agents_present": "Topic News Mapper", "strongest_signal_score": 97, "strongest_signal_headline_or_title": "Karl Storz and Womed announce exclusive U.S. distribution partnership for Womed Leaf", "strongest_signal_date": "2026-02-12", "primary_fziomed_bucket": "Intrauterine", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: Karl Storz and Womed announce exclusive U.S. distribution partnership for Womed Leaf.", "key_signal_summary": "Karl Storz and Womed announce exclusive U.S. distribution partnership for Womed Leaf (2026-02-12; score 97)", "manager_interpretation": "A global endoscopy company becoming exclusive U.S. distributor for an FDA-approved intrauterine adhesion barrier is a direct channel/competitive signal.", "confidence_level": "High", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": "Karl Storz and Womed announce exclusive U.S. distribution partnership for Womed Leaf (2026-02-12; score 97)", "categories_with_no_findings": "Company News; Paper / Funding", "lead_source": "Watchlist", "strongest_signal_url": "https://www.karlstorz.com/us/en/karl-storz-and-womed-announce-strategic-partnership-to-distribute-womed-leaf-in-the-united-states.htm"}, {"rank": 3, "lead_id": 15, "lead_company": "Hologic", "lead_domain": "hologic.com", "lead_type": "GYN / Women's Health", "consolidated_priority_score": 79, "priority_tier": "Tier 2 / High priority", "number_of_unique_signals": 2, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 93, "strongest_signal_headline_or_title": "Blackstone and TPG complete acquisition of Hologic", "strongest_signal_date": "2026-04-07", "primary_fziomed_bucket": "Intrauterine", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 2 included signal(s), led by: Blackstone and TPG complete acquisition of Hologic.", "key_signal_summary": "Blackstone and TPG complete acquisition of Hologic (2026-04-07; score 93); Hologic Q1 FY2026 surgical revenue grew on Gynesonics, MyoSure and Fluent (2026-01-29; score 84)", "manager_interpretation": "Major strategic reset at women\u2019s health leader with GYN surgical franchise; take-private ownership may create portfolio-growth and BD prioritization windows for FZIOMED.", "confidence_level": "High", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "Blackstone and TPG complete acquisition of Hologic (2026-04-07; score 93); Hologic Q1 FY2026 surgical revenue grew on Gynesonics, MyoSure and Fluent (2026-01-29; score 84)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://www.hologic.com/about/press-release/blackstone-and-tpg-complete-acquisition-hologic"}, {"rank": 4, "lead_id": 13, "lead_company": "Orthofix", "lead_domain": "orthofix.com", "lead_type": "Spine / Ortho", "consolidated_priority_score": 78, "priority_tier": "Tier 2 / High priority", "number_of_unique_signals": 1, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 94, "strongest_signal_headline_or_title": "Orthofix Q1 results highlight spine channel actions and renewed biologics focus", "strongest_signal_date": "2026-05-05", "primary_fziomed_bucket": "Spine", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: Orthofix Q1 results highlight spine channel actions and renewed biologics focus.", "key_signal_summary": "Orthofix Q1 results highlight spine channel actions and renewed biologics focus (2026-05-05; score 94)", "manager_interpretation": "High relevance because Orthofix is actively adjusting spine channels and biologics, creating a timely BD/channel discussion for FZIOMED\u2019s adhesion-prevention adjunct.", "confidence_level": "High", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "Orthofix Q1 results highlight spine channel actions and renewed biologics focus (2026-05-05; score 94)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://ir.orthofix.com/news/news-details/2026/Orthofix-Reports-First-Quarter-2026-Results-Highlighting-Steady-Execution-Following-Spine-Commercial-Channel-Actions-Reaffirms-Full-Year-2026-Financial-Guidance/default.aspx"}, {"rank": 5, "lead_id": 12, "lead_company": "ATEC (Alphatec)", "lead_domain": "atecspine.com", "lead_type": "Pure-play Spine", "consolidated_priority_score": 77, "priority_tier": "Tier 2 / High priority", "number_of_unique_signals": 1, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 89, "strongest_signal_headline_or_title": "ATEC reports 25% 2025 revenue growth and 2026 outlook", "strongest_signal_date": "2026-01-12", "primary_fziomed_bucket": "Spine", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: ATEC reports 25% 2025 revenue growth and 2026 outlook.", "key_signal_summary": "ATEC reports 25% 2025 revenue growth and 2026 outlook (2026-01-12; score 89)", "manager_interpretation": "Direct spine growth and scale signal; ATEC\u2019s surgeon base routinely faces epidural adhesions, making FZIOMED a plausible adjunct BD/commercial target.", "confidence_level": "High", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "ATEC reports 25% 2025 revenue growth and 2026 outlook (2026-01-12; score 89)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://investors.alphatecspine.com/press-releases/news-details/2026/ATEC-Announces-Select-Preliminary-Financial-Results-for-2025-and-Provides-2026-Outlook/default.aspx"}, {"rank": 6, "lead_id": 8, "lead_company": "Globus Medical", "lead_domain": "globusmedical.com", "lead_type": "Spine / Neuro", "consolidated_priority_score": 76, "priority_tier": "Tier 2 / High priority", "number_of_unique_signals": 1, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 86, "strongest_signal_headline_or_title": "Globus Medical reports record FY2025 results and reaffirms 2026 revenue guidance", "strongest_signal_date": "2026-02-24", "primary_fziomed_bucket": "Spine", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: Globus Medical reports record FY2025 results and reaffirms 2026 revenue guidance.", "key_signal_summary": "Globus Medical reports record FY2025 results and reaffirms 2026 revenue guidance (2026-02-24; score 86)", "manager_interpretation": "Directly relevant pure-play spine/musculoskeletal growth signal; FZIOMED should prioritize Globus as a spine-focused company actively scaling commercial channels.", "confidence_level": "High", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "Globus Medical reports record FY2025 results and reaffirms 2026 revenue guidance (2026-02-24; score 86)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://www.globenewswire.com/news-release/2026/02/24/3244064/0/en/globus-medical-reports-fourth-quarter-and-full-year-2025-results.html"}, {"rank": 7, "lead_id": 7, "lead_company": "Medtronic (Spine)", "lead_domain": "medtronic.com", "lead_type": "Spine / Neuro", "consolidated_priority_score": 76, "priority_tier": "Tier 2 / High priority", "number_of_unique_signals": 1, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 89, "strongest_signal_headline_or_title": "Medtronic receives FDA clearance for Stealth AXiS spine surgical system", "strongest_signal_date": "2026-02-13", "primary_fziomed_bucket": "Spine", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: Medtronic receives FDA clearance for Stealth AXiS spine surgical system.", "key_signal_summary": "Medtronic receives FDA clearance for Stealth AXiS spine surgical system (2026-02-13; score 89)", "manager_interpretation": "Highly relevant spine commercialization window; FZIOMED can position adhesion prevention as a complementary adjunct for spine surgeons using advanced navigation/robotics platforms.", "confidence_level": "High", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "Medtronic receives FDA clearance for Stealth AXiS spine surgical system (2026-02-13; score 89)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://news.medtronic.com/2026-02-13-Medtronic-receives-FDA-clearance-for-Stealth-AXiS-TM-surgical-system%2C-first-integrated-planning%2C-navigation-and-robotics-platform-for-spine-surgery"}, {"rank": 8, "lead_id": 6, "lead_company": "DePuy Synthes (J&J)", "lead_domain": "jnjmedtech.com", "lead_type": "Ortho / Spine / Trauma", "consolidated_priority_score": 74, "priority_tier": "Tier 3 / Watchlist", "number_of_unique_signals": 1, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 88, "strongest_signal_headline_or_title": "Johnson & Johnson announces intent to separate Orthopaedics business", "strongest_signal_date": "2025-10-14", "primary_fziomed_bucket": "Spine", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: Johnson & Johnson announces intent to separate Orthopaedics business.", "key_signal_summary": "Johnson & Johnson announces intent to separate Orthopaedics business (2025-10-14; score 88)", "manager_interpretation": "Directly relevant: a major ortho/spine/trauma channel may be reshaped, creating BD, distribution, portfolio-prioritization and new-company strategy openings for FZIOMED.", "confidence_level": "High", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "Johnson & Johnson announces intent to separate Orthopaedics business (2025-10-14; score 88)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://www.jnj.com/media-center/press-releases/johnson-johnson-announces-intent-to-separate-its-orthopaedics-business"}, {"rank": 9, "lead_id": 3, "lead_company": "Stryker", "lead_domain": "stryker.com", "lead_type": "Ortho / Spine / Sports Med", "consolidated_priority_score": 73, "priority_tier": "Tier 3 / Watchlist", "number_of_unique_signals": 1, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 80, "strongest_signal_headline_or_title": "Stryker Q1 2026 results show orthopedics growth despite medtech demand softness", "strongest_signal_date": "2026-04-30", "primary_fziomed_bucket": "Tendon / Hand / Peripheral Nerve", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: Stryker Q1 2026 results show orthopedics growth despite medtech demand softness.", "key_signal_summary": "Stryker Q1 2026 results show orthopedics growth despite medtech demand softness (2026-04-30; score 80)", "manager_interpretation": "Commercially relevant because Stryker remains a large active ortho/spine channel with near-term demand pressure; FZIOMED should prioritize clear value/complication reduction angles rather than generic portfolio pitches.", "confidence_level": "Medium", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "Stryker Q1 2026 results show orthopedics growth despite medtech demand softness (2026-04-30; score 80)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://www.reuters.com/business/healthcare-pharmaceuticals/stryker-misses-quarterly-estimates-muted-demand-medical-devices-2026-04-30/"}, {"rank": 10, "lead_id": 19, "lead_company": "Kebomed Europe", "lead_domain": "kebomed.fr", "lead_type": "Specialty Distributor", "consolidated_priority_score": 70, "priority_tier": "Tier 3 / Watchlist", "number_of_unique_signals": 1, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 84, "strongest_signal_headline_or_title": "Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network", "strongest_signal_date": "2025-04-09", "primary_fziomed_bucket": "Intrauterine", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network.", "key_signal_summary": "Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network (2025-04-09; score 84)", "manager_interpretation": "Direct competitive/channel signal: Kebomed already distributes an intrauterine adhesion barrier in Europe, making it a high-priority benchmark or potential channel intelligence target for FZIOMED.", "confidence_level": "High", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network (2025-04-09; score 84)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://www.businesswire.com/news/home/20250408790176/en/Womed-Launches-Female-Fertility-Preserving-Device-in-Europe"}, {"rank": 11, "lead_id": 20, "lead_company": "Saesco Medical", "lead_domain": "saescomedical.com", "lead_type": "Specialty Distributor", "consolidated_priority_score": 70, "priority_tier": "Tier 3 / Watchlist", "number_of_unique_signals": 1, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 84, "strongest_signal_headline_or_title": "Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network", "strongest_signal_date": "2025-04-09", "primary_fziomed_bucket": "Intrauterine", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network.", "key_signal_summary": "Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network (2025-04-09; score 84)", "manager_interpretation": "Direct competitive/channel signal: Saesco is already distributing an intrauterine adhesion barrier in Southern Europe/Benelux, making it high-value for channel intelligence and partner conflict checks.", "confidence_level": "High", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network (2025-04-09; score 84)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://www.businesswire.com/news/home/20250408790176/en/Womed-Launches-Female-Fertility-Preserving-Device-in-Europe"}, {"rank": 12, "lead_id": 10, "lead_company": "Bioventus", "lead_domain": "bioventus.com", "lead_type": "Orthobiologics / Sports Med", "consolidated_priority_score": 68, "priority_tier": "Tier 3 / Watchlist", "number_of_unique_signals": 1, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 68, "strongest_signal_headline_or_title": "Bioventus reports FY2025 results with improved adjusted EBITDA and organic growth", "strongest_signal_date": "2026-03-05", "primary_fziomed_bucket": "Tendon / Hand / Peripheral Nerve", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: Bioventus reports FY2025 results with improved adjusted EBITDA and organic growth.", "key_signal_summary": "Bioventus reports FY2025 results with improved adjusted EBITDA and organic growth (2026-03-05; score 68)", "manager_interpretation": "Moderately relevant because Bioventus has orthobiologics/surgical solutions and sports medicine call points, but the release is not a direct portfolio expansion trigger.", "confidence_level": "Medium", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "Bioventus reports FY2025 results with improved adjusted EBITDA and organic growth (2026-03-05; score 68)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://ir.bioventus.com/node/10351/pdf"}, {"rank": 13, "lead_id": 26, "lead_company": "CG Bio", "lead_domain": "cgbio.co.kr", "lead_type": "APAC Distributor", "consolidated_priority_score": 68, "priority_tier": "Tier 3 / Watchlist", "number_of_unique_signals": 1, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 76, "strongest_signal_headline_or_title": "CGBIO showcases medtech portfolio at KIMES 2026 and reports KRW 5.3B in contracts", "strongest_signal_date": "2026-04-06", "primary_fziomed_bucket": "Cross-bucket / corporate", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: CGBIO showcases medtech portfolio at KIMES 2026 and reports KRW 5.3B in contracts.", "key_signal_summary": "CGBIO showcases medtech portfolio at KIMES 2026 and reports KRW 5.3B in contracts (2026-04-06; score 76)", "manager_interpretation": "Relevant as APAC distribution/commercial expansion by a regenerative/biologics-oriented medtech company; FZIOMED could explore APAC channel or biologics-adjacent partnerships.", "confidence_level": "Medium", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "CGBIO showcases medtech portfolio at KIMES 2026 and reports KRW 5.3B in contracts (2026-04-06; score 76)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://www.morningstar.com/news/pr-newswire/20260406cn27406/cgbio-showcases-comprehensive-medical-device-portfolio-at-kimes-2026-achieves-krw-53-billion-in-contract-results"}, {"rank": 14, "lead_id": 24, "lead_company": "Teleflex", "lead_domain": "teleflex.com", "lead_type": "Global Distributor / Partner", "consolidated_priority_score": 68, "priority_tier": "Tier 3 / Watchlist", "number_of_unique_signals": 1, "signal_types_present": "Company news signal", "source_agents_present": "Company News Mapper", "strongest_signal_score": 80, "strongest_signal_headline_or_title": "Teleflex announces sale of Acute Care, Interventional Urology and OEM businesses for $2.03B", "strongest_signal_date": "2025-12-09", "primary_fziomed_bucket": "Cross-bucket / corporate", "secondary_buckets": null, "why_this_lead_is_prioritized": "Lead has 1 included signal(s), led by: Teleflex announces sale of Acute Care, Interventional Urology and OEM businesses for $2.03B.", "key_signal_summary": "Teleflex announces sale of Acute Care, Interventional Urology and OEM businesses for $2.03B (2025-12-09; score 80)", "manager_interpretation": "Strong strategic refocus signal; FZIOMED should reassess Teleflex fit because divesting interventional/surgical adjacencies may reduce or redirect distribution appetite.", "confidence_level": "Medium", "source_traceability_note": "Included signals retain source URL/source-row references in consolidated_signals.", "company_news_summary": "Teleflex announces sale of Acute Care, Interventional Urology and OEM businesses for $2.03B (2025-12-09; score 80)", "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": "https://investors.teleflex.com/news/news-details/2025/Teleflex-Announces-Sale-of-Acute-Care-Interventional-Urology-and-OEM-Businesses-for-2-03-Billion/default.aspx"}, {"rank": null, "lead_id": 2, "lead_company": "Arthrex", "lead_domain": "arthrex.com", "lead_type": "Sports Med / Ortho", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": 4, "lead_company": "Zimmer Biomet", "lead_domain": "zimmerbiomet.com", "lead_type": "Ortho / Sports Med", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": 5, "lead_company": "CONMED", "lead_domain": "conmed.com", "lead_type": "Sports Med / MIS Surgery", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": 9, "lead_company": "Enovis (ex-DJO)", "lead_domain": "enovis.com", "lead_type": "Ortho / Rehab / Sports Med", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": 11, "lead_company": "Medacta", "lead_domain": "medacta.com", "lead_type": "Ortho / Spine / Sports Med", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": 16, "lead_company": "CooperSurgical", "lead_domain": "coopersurgical.com", "lead_type": "GYN / Fertility", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": 17, "lead_company": "Getinge", "lead_domain": "getinge.com", "lead_type": "Complementario", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": 18, "lead_company": "B. Braun", "lead_domain": "bbraun.com", "lead_type": "Europe / LATAM Distributor", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": 22, "lead_company": "M\u00f6lnlycke Health Care", "lead_domain": "molnlycke.com", "lead_type": "EU Distributor / Partner", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": 23, "lead_company": "Coloplast", "lead_domain": "coloplast.com", "lead_type": "EU-LATAM Distributor / Partner", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": 25, "lead_company": "Meril Life Sciences", "lead_domain": "merillife.com", "lead_type": "APAC + LATAM Distributor / OEM", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": 27, "lead_company": "Narang Medical", "lead_domain": "narangmedical.com", "lead_type": "India / MEA Distributor", "consolidated_priority_score": null, "priority_tier": "SILENT", "number_of_unique_signals": 0, "signal_types_present": null, "source_agents_present": null, "strongest_signal_score": null, "strongest_signal_headline_or_title": null, "strongest_signal_date": null, "primary_fziomed_bucket": null, "secondary_buckets": null, "why_this_lead_is_prioritized": null, "key_signal_summary": null, "manager_interpretation": null, "confidence_level": null, "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": null, "topic_news_summary": null, "categories_with_no_findings": "Company News; Paper / Funding; Topic News", "lead_source": "Watchlist", "strongest_signal_url": null}, {"rank": null, "lead_id": "NEW-001", "lead_company": "Zhejiang Provincial Medical and Health Science and Technology Plan", "lead_domain": null, "lead_type": "Paper / Funding context", "consolidated_priority_score": null, "priority_tier": "NEW", "number_of_unique_signals": 1, "signal_types_present": "Paper / funding / disclosure signal", "source_agents_present": "Paper / Funding Mapper", "strongest_signal_score": null, "strongest_signal_headline_or_title": "Comparing durations of intrauterine balloon placement for intrauterine adhesions after hysteroscopic surgery: a systematic review and meta-analysis", "strongest_signal_date": "2026-02-07", "primary_fziomed_bucket": "Intrauterine", "secondary_buckets": null, "why_this_lead_is_prioritized": "NEW paper/funding context identified outside the Watchlist; not scored as a verified lead.", "key_signal_summary": "Comparing durations of intrauterine balloon placement for intrauterine adhesions after hysteroscopic surgery: a systematic review and meta-analysis \u2014 Direct funding/support; Supported the study; Grant No. 2025KY1752.", "manager_interpretation": "Funds research in intrauterine adhesion recurrence/prevention after hysteroscopic surgery.", "confidence_level": "Context only \u2014 unmatched to Watchlist", "source_traceability_note": null, "company_news_summary": null, "paper_funding_summary": "Comparing durations of intrauterine balloon placement for intrauterine adhesions after hysteroscopic surgery: a systematic review and meta-analysis \u2014 Direct funding/support; Supported the study; Grant No. 2025KY1752.", "topic_news_summary": null, "categories_with_no_findings": "Company News; Topic News", "lead_source": "NEW", "strongest_signal_url": "https://pubmed.ncbi.nlm.nih.gov/41654781/"}];
+    const SIGNALS_DATA = [{"lead_id": 1, "lead_company": "Smith & Nephew", "lead_domain": "smith-nephew.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Tendon / Hand / Peripheral Nerve", "signal_category": "M&A / acquisition", "signal_date": "2026-01-12", "signal_headline_or_title": "Smith+Nephew strengthens shoulder repair portfolio with acquisition of Integrity Orthopaedics", "source_name": "Smith+Nephew", "source_url": "https://www.smith-nephew.com/en/news/2026/01/12/smithnephew-strengthens-shoulder-repair-portfolio-with-acquisition", "normalized_signal_score": 87, "priority_contribution": "Counted once in lead score; signal score 87", "match_type": "Upstream lead match", "match_confidence": "High", "evidence_text": "Smith+Nephew strengthens shoulder repair portfolio with acquisition of Integrity Orthopaedics", "fziomed_relevance_rationale": "Direct sports medicine/OR portfolio expansion around soft-tissue repair; supports outreach around adjunct products that reduce post-surgical complications in shoulder/sports med procedures.", "manager_interpretation": "Direct sports medicine/OR portfolio expansion around soft-tissue repair; supports outreach around adjunct products that reduce post-surgical complications in shoulder/sports med procedures. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A2:S2"}, {"lead_id": 1, "lead_company": "Smith & Nephew", "lead_domain": "smith-nephew.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Tendon / Hand / Peripheral Nerve", "signal_category": "Strategic partnership", "signal_date": "2026-02-12", "signal_headline_or_title": "KARL STORZ and Smith+Nephew announce strategic relationship in sports medicine", "source_name": "KARL STORZ", "source_url": "https://www.karlstorz.com/us/en/karl-storz-and-smith-nephew-announce-strategic-relationship.htm", "normalized_signal_score": 78, "priority_contribution": "Counted once in lead score; signal score 78", "match_type": "Upstream lead match", "match_confidence": "Medium", "evidence_text": "KARL STORZ and Smith+Nephew announce strategic relationship in sports medicine", "fziomed_relevance_rationale": "Commercially relevant because it shows Smith+Nephew is open to OR ecosystem partnerships in sports medicine; potential route for adjunct products positioned alongside OR workflow solutions.", "manager_interpretation": "Commercially relevant because it shows Smith+Nephew is open to OR ecosystem partnerships in sports medicine; potential route for adjunct products positioned alongside OR workflow solutions. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A3:S3"}, {"lead_id": 1, "lead_company": "Smith & Nephew", "lead_domain": "smith-nephew.com", "signal_type": "Topic-to-lead market signal", "signal_source_agent": "Topic News Mapper", "signal_bucket": "Tendon / Hand / Peripheral Nerve", "signal_category": "Competitive product movement / guideline update", "signal_date": "2026-03-02", "signal_headline_or_title": "Smith+Nephew highlights newly acquired Tendon Seam and AAOS support for bioinductive implants in rotator cuff repair", "source_name": "Smith+Nephew", "source_url": "https://www.smith-nephew.com/en/news/2026/03/02/sn-to-feature-leading-rotator-cuff-repair-portfolio-at-aaos-2026", "normalized_signal_score": 76, "priority_contribution": "Counted once in lead score; signal score 76", "match_type": "Direct company mention", "match_confidence": "High", "evidence_text": "Smith+Nephew is the source company and a lead-list company; signal directly concerns tendon repair portfolio expansion.", "fziomed_relevance_rationale": "A lead-list company is expanding tendon repair positioning with acquired repair technology and guideline-supported biologic augmentation; useful for tendon/soft-tissue adjacency prioritization.", "manager_interpretation": "Smith+Nephew is the source company and a lead-list company; signal directly concerns tendon repair portfolio expansion. Manager context: the topic signal was conservatively mapped to this lead and may provide market or channel context for FZIOMED.", "duplicate_group_id": null, "source_sheet": "topic_to_lead_matches + scored_topic_signals", "source_row_reference": "Topic News Mapper:topic_to_lead_matches!A13:L13"}, {"lead_id": 3, "lead_company": "Stryker", "lead_domain": "stryker.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Tendon / Hand / Peripheral Nerve", "signal_category": "Earnings / investor update", "signal_date": "2026-04-30", "signal_headline_or_title": "Stryker Q1 2026 results show orthopedics growth despite medtech demand softness", "source_name": "Reuters", "source_url": "https://www.reuters.com/business/healthcare-pharmaceuticals/stryker-misses-quarterly-estimates-muted-demand-medical-devices-2026-04-30/", "normalized_signal_score": 80, "priority_contribution": "Counted once in lead score; signal score 80", "match_type": "Upstream lead match", "match_confidence": "Medium", "evidence_text": "Stryker Q1 2026 results show orthopedics growth despite medtech demand softness", "fziomed_relevance_rationale": "Commercially relevant because Stryker remains a large active ortho/spine channel with near-term demand pressure; FZIOMED should prioritize clear value/complication reduction angles rather than generic portfolio pitches.", "manager_interpretation": "Commercially relevant because Stryker remains a large active ortho/spine channel with near-term demand pressure; FZIOMED should prioritize clear value/complication reduction angles rather than generic portfolio pitches. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A5:S5"}, {"lead_id": 6, "lead_company": "DePuy Synthes (J&J)", "lead_domain": "jnjmedtech.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Spine", "signal_category": "Restructuring / divestiture", "signal_date": "2025-10-14", "signal_headline_or_title": "Johnson & Johnson announces intent to separate Orthopaedics business", "source_name": "Johnson & Johnson", "source_url": "https://www.jnj.com/media-center/press-releases/johnson-johnson-announces-intent-to-separate-its-orthopaedics-business", "normalized_signal_score": 88, "priority_contribution": "Counted once in lead score; signal score 88", "match_type": "Upstream lead match", "match_confidence": "High", "evidence_text": "Johnson & Johnson announces intent to separate Orthopaedics business", "fziomed_relevance_rationale": "Directly relevant: a major ortho/spine/trauma channel may be reshaped, creating BD, distribution, portfolio-prioritization and new-company strategy openings for FZIOMED.", "manager_interpretation": "Directly relevant: a major ortho/spine/trauma channel may be reshaped, creating BD, distribution, portfolio-prioritization and new-company strategy openings for FZIOMED. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A8:S8"}, {"lead_id": 7, "lead_company": "Medtronic (Spine)", "lead_domain": "medtronic.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Spine", "signal_category": "Regulatory approval / product launch", "signal_date": "2026-02-13", "signal_headline_or_title": "Medtronic receives FDA clearance for Stealth AXiS spine surgical system", "source_name": "Medtronic Newsroom", "source_url": "https://news.medtronic.com/2026-02-13-Medtronic-receives-FDA-clearance-for-Stealth-AXiS-TM-surgical-system%2C-first-integrated-planning%2C-navigation-and-robotics-platform-for-spine-surgery", "normalized_signal_score": 89, "priority_contribution": "Counted once in lead score; signal score 89", "match_type": "Upstream lead match", "match_confidence": "High", "evidence_text": "Medtronic receives FDA clearance for Stealth AXiS spine surgical system", "fziomed_relevance_rationale": "Highly relevant spine commercialization window; FZIOMED can position adhesion prevention as a complementary adjunct for spine surgeons using advanced navigation/robotics platforms.", "manager_interpretation": "Highly relevant spine commercialization window; FZIOMED can position adhesion prevention as a complementary adjunct for spine surgeons using advanced navigation/robotics platforms. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A9:S9"}, {"lead_id": 8, "lead_company": "Globus Medical", "lead_domain": "globusmedical.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Spine", "signal_category": "Earnings / investor update", "signal_date": "2026-02-24", "signal_headline_or_title": "Globus Medical reports record FY2025 results and reaffirms 2026 revenue guidance", "source_name": "GlobeNewswire / Globus Medical", "source_url": "https://www.globenewswire.com/news-release/2026/02/24/3244064/0/en/globus-medical-reports-fourth-quarter-and-full-year-2025-results.html", "normalized_signal_score": 86, "priority_contribution": "Counted once in lead score; signal score 86", "match_type": "Upstream lead match", "match_confidence": "High", "evidence_text": "Globus Medical reports record FY2025 results and reaffirms 2026 revenue guidance", "fziomed_relevance_rationale": "Directly relevant pure-play spine/musculoskeletal growth signal; FZIOMED should prioritize Globus as a spine-focused company actively scaling commercial channels.", "manager_interpretation": "Directly relevant pure-play spine/musculoskeletal growth signal; FZIOMED should prioritize Globus as a spine-focused company actively scaling commercial channels. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A10:S10"}, {"lead_id": 10, "lead_company": "Bioventus", "lead_domain": "bioventus.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Tendon / Hand / Peripheral Nerve", "signal_category": "Earnings / investor update", "signal_date": "2026-03-05", "signal_headline_or_title": "Bioventus reports FY2025 results with improved adjusted EBITDA and organic growth", "source_name": "Bioventus IR", "source_url": "https://ir.bioventus.com/node/10351/pdf", "normalized_signal_score": 68, "priority_contribution": "Counted once in lead score; signal score 68", "match_type": "Upstream lead match", "match_confidence": "Medium", "evidence_text": "Bioventus reports FY2025 results with improved adjusted EBITDA and organic growth", "fziomed_relevance_rationale": "Moderately relevant because Bioventus has orthobiologics/surgical solutions and sports medicine call points, but the release is not a direct portfolio expansion trigger.", "manager_interpretation": "Moderately relevant because Bioventus has orthobiologics/surgical solutions and sports medicine call points, but the release is not a direct portfolio expansion trigger. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A11:S11"}, {"lead_id": 12, "lead_company": "ATEC (Alphatec)", "lead_domain": "atecspine.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Spine", "signal_category": "Earnings / investor update", "signal_date": "2026-01-12", "signal_headline_or_title": "ATEC reports 25% 2025 revenue growth and 2026 outlook", "source_name": "Alphatec / ATEC IR", "source_url": "https://investors.alphatecspine.com/press-releases/news-details/2026/ATEC-Announces-Select-Preliminary-Financial-Results-for-2025-and-Provides-2026-Outlook/default.aspx", "normalized_signal_score": 89, "priority_contribution": "Counted once in lead score; signal score 89", "match_type": "Upstream lead match", "match_confidence": "High", "evidence_text": "ATEC reports 25% 2025 revenue growth and 2026 outlook", "fziomed_relevance_rationale": "Direct spine growth and scale signal; ATEC\u2019s surgeon base routinely faces epidural adhesions, making FZIOMED a plausible adjunct BD/commercial target.", "manager_interpretation": "Direct spine growth and scale signal; ATEC\u2019s surgeon base routinely faces epidural adhesions, making FZIOMED a plausible adjunct BD/commercial target. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A12:S12"}, {"lead_id": 13, "lead_company": "Orthofix", "lead_domain": "orthofix.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Spine", "signal_category": "Strategic update / earnings", "signal_date": "2026-05-05", "signal_headline_or_title": "Orthofix Q1 results highlight spine channel actions and renewed biologics focus", "source_name": "Orthofix IR", "source_url": "https://ir.orthofix.com/news/news-details/2026/Orthofix-Reports-First-Quarter-2026-Results-Highlighting-Steady-Execution-Following-Spine-Commercial-Channel-Actions-Reaffirms-Full-Year-2026-Financial-Guidance/default.aspx", "normalized_signal_score": 94, "priority_contribution": "Counted once in lead score; signal score 94", "match_type": "Upstream lead match", "match_confidence": "High", "evidence_text": "Orthofix Q1 results highlight spine channel actions and renewed biologics focus", "fziomed_relevance_rationale": "High relevance because Orthofix is actively adjusting spine channels and biologics, creating a timely BD/channel discussion for FZIOMED\u2019s adhesion-prevention adjunct.", "manager_interpretation": "High relevance because Orthofix is actively adjusting spine channels and biologics, creating a timely BD/channel discussion for FZIOMED\u2019s adhesion-prevention adjunct. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A13:S13"}, {"lead_id": 14, "lead_company": "Karl Storz", "lead_domain": "karlstorz.com", "signal_type": "Topic-to-lead market signal", "signal_source_agent": "Topic News Mapper", "signal_bucket": "Intrauterine", "signal_category": "Strategic partnership / distribution agreement", "signal_date": "2026-02-12", "signal_headline_or_title": "Karl Storz and Womed announce exclusive U.S. distribution partnership for Womed Leaf", "source_name": "Karl Storz", "source_url": "https://www.karlstorz.com/us/en/karl-storz-and-womed-announce-strategic-partnership-to-distribute-womed-leaf-in-the-united-states.htm", "normalized_signal_score": 97, "priority_contribution": "Counted once in lead score; signal score 97", "match_type": "Direct company mention", "match_confidence": "High", "evidence_text": "Karl Storz is directly named as exclusive U.S. distributor for Womed Leaf; lead list identifies it as endoscopic/hysteroscopy instrumentation channel.", "fziomed_relevance_rationale": "A global endoscopy company becoming exclusive U.S. distributor for an FDA-approved intrauterine adhesion barrier is a direct channel/competitive signal.", "manager_interpretation": "Karl Storz is directly named as exclusive U.S. distributor for Womed Leaf; lead list identifies it as endoscopic/hysteroscopy instrumentation channel. Manager context: the topic signal was conservatively mapped to this lead and may provide market or channel context for FZIOMED. Duplicate/supporting mapper evidence was merged so this event is counted once.", "duplicate_group_id": "DUP-001", "source_sheet": "topic_to_lead_matches + scored_topic_signals", "source_row_reference": "Topic News Mapper:topic_to_lead_matches!A4:L4"}, {"lead_id": 15, "lead_company": "Hologic", "lead_domain": "hologic.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Intrauterine", "signal_category": "M&A / acquisition", "signal_date": "2026-04-07", "signal_headline_or_title": "Blackstone and TPG complete acquisition of Hologic", "source_name": "Hologic", "source_url": "https://www.hologic.com/about/press-release/blackstone-and-tpg-complete-acquisition-hologic", "normalized_signal_score": 93, "priority_contribution": "Counted once in lead score; signal score 93", "match_type": "Upstream lead match", "match_confidence": "High", "evidence_text": "Blackstone and TPG complete acquisition of Hologic", "fziomed_relevance_rationale": "Major strategic reset at women\u2019s health leader with GYN surgical franchise; take-private ownership may create portfolio-growth and BD prioritization windows for FZIOMED.", "manager_interpretation": "Major strategic reset at women\u2019s health leader with GYN surgical franchise; take-private ownership may create portfolio-growth and BD prioritization windows for FZIOMED. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A15:S15"}, {"lead_id": 15, "lead_company": "Hologic", "lead_domain": "hologic.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Intrauterine", "signal_category": "Earnings / investor update", "signal_date": "2026-01-29", "signal_headline_or_title": "Hologic Q1 FY2026 surgical revenue grew on Gynesonics, MyoSure and Fluent", "source_name": "Hologic", "source_url": "https://www.hologic.com/about/press-release/hologic-announces-financial-results-first-quarter-fiscal-2026", "normalized_signal_score": 84, "priority_contribution": "Counted once in lead score; signal score 84", "match_type": "Upstream lead match", "match_confidence": "High", "evidence_text": "Hologic Q1 FY2026 surgical revenue grew on Gynesonics, MyoSure and Fluent", "fziomed_relevance_rationale": "Direct GYN surgical growth signal tied to hysteroscopy/intrauterine procedure platforms where adhesions are relevant.", "manager_interpretation": "Direct GYN surgical growth signal tied to hysteroscopy/intrauterine procedure platforms where adhesions are relevant. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A16:S16"}, {"lead_id": 19, "lead_company": "Kebomed Europe", "lead_domain": "kebomed.fr", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Intrauterine", "signal_category": "Distribution agreement / product launch", "signal_date": "2025-04-09", "signal_headline_or_title": "Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network", "source_name": "Business Wire", "source_url": "https://www.businesswire.com/news/home/20250408790176/en/Womed-Launches-Female-Fertility-Preserving-Device-in-Europe", "normalized_signal_score": 84, "priority_contribution": "Counted once in lead score; signal score 84", "match_type": "Upstream lead match", "match_confidence": "High", "evidence_text": "Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network", "fziomed_relevance_rationale": "Direct competitive/channel signal: Kebomed already distributes an intrauterine adhesion barrier in Europe, making it a high-priority benchmark or potential channel intelligence target for FZIOMED.", "manager_interpretation": "Direct competitive/channel signal: Kebomed already distributes an intrauterine adhesion barrier in Europe, making it a high-priority benchmark or potential channel intelligence target for FZIOMED. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning. Duplicate/supporting mapper evidence was merged so this event is counted once.", "duplicate_group_id": "DUP-002", "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A18:S18"}, {"lead_id": 20, "lead_company": "Saesco Medical", "lead_domain": "saescomedical.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Intrauterine", "signal_category": "Distribution agreement / product launch", "signal_date": "2025-04-09", "signal_headline_or_title": "Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network", "source_name": "Business Wire", "source_url": "https://www.businesswire.com/news/home/20250408790176/en/Womed-Launches-Female-Fertility-Preserving-Device-in-Europe", "normalized_signal_score": 84, "priority_contribution": "Counted once in lead score; signal score 84", "match_type": "Upstream lead match", "match_confidence": "High", "evidence_text": "Womed launches Womed Leaf in Europe through Kebomed and Saesco distribution network", "fziomed_relevance_rationale": "Direct competitive/channel signal: Saesco is already distributing an intrauterine adhesion barrier in Southern Europe/Benelux, making it high-value for channel intelligence and partner conflict checks.", "manager_interpretation": "Direct competitive/channel signal: Saesco is already distributing an intrauterine adhesion barrier in Southern Europe/Benelux, making it high-value for channel intelligence and partner conflict checks. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning. Duplicate/supporting mapper evidence was merged so this event is counted once.", "duplicate_group_id": "DUP-003", "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A19:S19"}, {"lead_id": 24, "lead_company": "Teleflex", "lead_domain": "teleflex.com", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Cross-bucket / corporate", "signal_category": "Restructuring / divestiture", "signal_date": "2025-12-09", "signal_headline_or_title": "Teleflex announces sale of Acute Care, Interventional Urology and OEM businesses for $2.03B", "source_name": "Teleflex IR", "source_url": "https://investors.teleflex.com/news/news-details/2025/Teleflex-Announces-Sale-of-Acute-Care-Interventional-Urology-and-OEM-Businesses-for-2-03-Billion/default.aspx", "normalized_signal_score": 80, "priority_contribution": "Counted once in lead score; signal score 80", "match_type": "Upstream lead match", "match_confidence": "Medium", "evidence_text": "Teleflex announces sale of Acute Care, Interventional Urology and OEM businesses for $2.03B", "fziomed_relevance_rationale": "Strong strategic refocus signal; FZIOMED should reassess Teleflex fit because divesting interventional/surgical adjacencies may reduce or redirect distribution appetite.", "manager_interpretation": "Strong strategic refocus signal; FZIOMED should reassess Teleflex fit because divesting interventional/surgical adjacencies may reduce or redirect distribution appetite. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A22:S22"}, {"lead_id": 26, "lead_company": "CG Bio", "lead_domain": "cgbio.co.kr", "signal_type": "Company news signal", "signal_source_agent": "Company News Mapper", "signal_bucket": "Cross-bucket / corporate", "signal_category": "Geographic expansion / partnership", "signal_date": "2026-04-06", "signal_headline_or_title": "CGBIO showcases medtech portfolio at KIMES 2026 and reports KRW 5.3B in contracts", "source_name": "PR Newswire / Morningstar", "source_url": "https://www.morningstar.com/news/pr-newswire/20260406cn27406/cgbio-showcases-comprehensive-medical-device-portfolio-at-kimes-2026-achieves-krw-53-billion-in-contract-results", "normalized_signal_score": 76, "priority_contribution": "Counted once in lead score; signal score 76", "match_type": "Upstream lead match", "match_confidence": "Medium", "evidence_text": "CGBIO showcases medtech portfolio at KIMES 2026 and reports KRW 5.3B in contracts", "fziomed_relevance_rationale": "Relevant as APAC distribution/commercial expansion by a regenerative/biologics-oriented medtech company; FZIOMED could explore APAC channel or biologics-adjacent partnerships.", "manager_interpretation": "Relevant as APAC distribution/commercial expansion by a regenerative/biologics-oriented medtech company; FZIOMED could explore APAC channel or biologics-adjacent partnerships. Manager context: this signal indicates relevant portfolio, channel, or market movement that may affect FZIOMED positioning.", "duplicate_group_id": null, "source_sheet": "scored_news_signals", "source_row_reference": "Company News Mapper:scored_news_signals!A23:S23"}, {"lead_id": "NEW-001", "lead_company": "Zhejiang Provincial Medical and Health Science and Technology Plan", "lead_domain": null, "signal_type": "Paper / funding / disclosure signal", "signal_source_agent": "Paper / Funding Mapper", "signal_bucket": "Intrauterine", "signal_category": "Funding disclosure / grant", "signal_date": "2026-02-07", "signal_headline_or_title": "Comparing durations of intrauterine balloon placement for intrauterine adhesions after hysteroscopic surgery: a systematic review and meta-analysis", "source_name": "PubMed / paper funding disclosure", "source_url": "https://pubmed.ncbi.nlm.nih.gov/41654781/", "normalized_signal_score": null, "priority_contribution": "Context only", "match_type": "Unmatched / context", "match_confidence": "Context only", "evidence_text": "Funds research in intrauterine adhesion recurrence/prevention after hysteroscopic surgery.", "fziomed_relevance_rationale": "Funds research in intrauterine adhesion recurrence/prevention after hysteroscopic surgery.", "manager_interpretation": "Funds research in intrauterine adhesion recurrence/prevention after hysteroscopic surgery.", "duplicate_group_id": null, "source_sheet": "unmatched_context_signals", "source_row_reference": null}];
+
+    // ============================================================
+    // CONFIG
+    // ============================================================
+    const TIER_CONFIG = {
+      'Tier 1 / Highest priority': { label: 'TIER 1', short: 'Highest', color: '#B5F33D' },
+      'Tier 2 / High priority':    { label: 'TIER 2', short: 'High',    color: '#7FB820' },
+      'Tier 3 / Watchlist':        { label: 'TIER 3', short: 'Watch',   color: '#4A7012' },
+      'NEW':                       { label: 'NEW',    short: 'New',     color: '#E879F9' },
+      'SILENT':                    { label: 'SILENT', short: 'Silent',  color: '#475569' },
+    };
+
+    const BUCKET_COLORS = {
+      'Intrauterine': '#E879F9',
+      'Spine': '#60A5FA',
+      'Tendon / Hand / Peripheral Nerve': '#FBBF24',
+      'Cross-bucket / corporate': '#94A3B8',
+    };
+
+    const SOURCE_CONFIG = [
+      { label: 'Company News',     color: '#B5F33D', match: ['Company News Mapper', 'Company news signal'] },
+      { label: 'Topic News',       color: '#60A5FA', match: ['Topic News Mapper', 'Topic-to-lead market signal'] },
+      { label: 'Papers / Funding', color: '#E879F9', match: ['Paper / Funding Mapper', 'Paper / funding'] },
+    ];
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    const h = React.createElement;
+    const { useState, useMemo } = React;
+
+    function cleanAgent(name) {
+      if (!name) return '';
+      return name.replace(/\s*Mapper\s*/gi, '').trim();
+    }
+
+    function formatDate(d) {
+      if (!d) return '—';
+      try {
+        const date = new Date(d);
+        if (isNaN(date)) return d;
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      } catch { return d; }
+    }
+
+    function getSignalSource(signal) {
+      const agent = signal.signal_source_agent || '';
+      const type = signal.signal_type || '';
+      for (const cfg of SOURCE_CONFIG) {
+        if (cfg.match.some(m => agent.includes(m) || type.includes(m))) {
+          return { label: cfg.label, color: cfg.color };
+        }
+      }
+      return { label: cleanAgent(agent) || 'Other', color: '#94A3B8' };
+    }
+
+    // ============================================================
+    // SMALL COMPONENTS
+    // ============================================================
+    function ScoreBar({ score, emptyLabel }) {
+      if (score == null) {
+        return h('div', { className: 'text-sm font-mono italic', style: { color: '#5A7048' } },
+          emptyLabel || 'Not scored — context only');
+      }
+      const pct = Math.min(100, Math.max(0, score));
+      return h('div', { className: 'flex items-center gap-3' },
+        h('div', {
+          className: 'text-3xl font-bold tracking-tight tabular-nums',
+          style: { color: '#B5F33D' }
+        }, score),
+        h('div', {
+          className: 'flex-1 h-1.5 rounded-full overflow-hidden',
+          style: { background: 'rgba(181,243,61,0.12)' }
+        },
+          h('div', {
+            className: 'h-full rounded-full transition-all duration-700',
+            style: { width: pct + '%', background: 'linear-gradient(90deg, #4A7012 0%, #B5F33D 100%)' }
+          })
+        )
+      );
+    }
+
+    function SectionHeader({ children }) {
+      return h('div', {
+        className: 'text-[10px] uppercase tracking-widest font-mono mb-3',
+        style: { color: '#7A8B6A' }
+      }, '── ', children);
+    }
+
+    function LeadCard({ lead, isSelected, onClick }) {
+      const tier = TIER_CONFIG[lead.priority_tier] || TIER_CONFIG['Tier 3 / Watchlist'];
+      const bucketColor = BUCKET_COLORS[lead.primary_fziomed_bucket] || '#94A3B8';
+      const isNew = lead.priority_tier === 'NEW';
+      const isSilent = lead.priority_tier === 'SILENT';
+      const noRank = isNew || isSilent;
+
+      return h('button', {
+        onClick: onClick,
+        className: 'w-full text-left group relative transition-all duration-200',
+        style: {
+          background: isSelected ? 'rgba(181,243,61,0.06)' : 'rgba(255,255,255,0.02)',
+          borderLeft: '2px solid ' + (isSelected ? '#B5F33D' : 'transparent'),
+          padding: '16px 20px',
+          opacity: isSilent && !isSelected ? 0.55 : 1,
+        }
+      },
+        h('div', { className: 'flex items-start justify-between gap-3 mb-2' },
+          h('div', { className: 'flex items-baseline gap-3 min-w-0' },
+            h('span', {
+              className: 'text-xs font-mono tabular-nums',
+              style: { color: '#5A7048' }
+            }, noRank ? '——' : String(lead.rank).padStart(2, '0')),
+            h('div', { className: 'min-w-0' },
+              h('div', {
+                className: 'text-base font-semibold text-white truncate group-hover:text-[#B5F33D] transition-colors'
+              }, lead.lead_company),
+              h('div', {
+                className: 'text-[11px] uppercase tracking-wider mt-0.5',
+                style: { color: '#7A8B6A' }
+              }, lead.lead_type || '\u00A0')
+            )
+          ),
+          h('div', {
+            className: 'text-2xl font-bold tabular-nums shrink-0',
+            style: { color: tier.color }
+          }, noRank ? '·' : lead.consolidated_priority_score)
+        ),
+        h('div', { className: 'flex items-center gap-2 flex-wrap mt-2' },
+          h('span', {
+            className: 'text-[10px] uppercase tracking-widest font-mono px-1.5 py-0.5 rounded-sm',
+            style: { background: tier.color + '22', color: tier.color }
+          }, tier.short),
+          lead.primary_fziomed_bucket && h('span', {
+            className: 'text-[10px] uppercase tracking-widest font-mono',
+            style: { color: bucketColor }
+          }, '● ', lead.primary_fziomed_bucket),
+          h('span', {
+            className: 'text-[10px] font-mono ml-auto',
+            style: { color: '#5A7048' }
+          }, isSilent
+              ? 'no activity this window'
+              : (lead.number_of_unique_signals || 0) + ' signal' + ((lead.number_of_unique_signals || 0) !== 1 ? 's' : '')
+          )
+        )
+      );
+    }
+
+    function SignalRow({ signal }) {
+      const score = signal.normalized_signal_score;
+      const scoreColor = score == null ? '#5A7048' : score >= 85 ? '#B5F33D' : score >= 70 ? '#7FB820' : '#5A7048';
+      const source = getSignalSource(signal);
+      const url = signal.source_url;
+      return h('div', {
+        className: 'border-l-2 pl-4 py-3',
+        style: { borderColor: source.color }
+      },
+        h('div', { className: 'flex items-baseline justify-between gap-3 mb-1.5' },
+          h('div', {
+            className: 'text-[10px] uppercase tracking-widest font-mono',
+            style: { color: '#7A8B6A' }
+          },
+            h('span', { style: { color: source.color } }, source.label),
+            ' · ',
+            formatDate(signal.signal_date)
+          ),
+          score != null && h('div', {
+            className: 'text-sm font-bold tabular-nums shrink-0',
+            style: { color: scoreColor }
+          }, score)
+        ),
+        h('div', { className: 'text-sm text-white/90 leading-snug mb-2' },
+          signal.signal_headline_or_title
+        ),
+        h('div', { className: 'flex items-center gap-2 flex-wrap' },
+          signal.signal_category && h('span', {
+            className: 'text-[10px] font-mono px-1.5 py-0.5 rounded-sm',
+            style: { background: 'rgba(255,255,255,0.05)', color: '#94A3B8' }
+          }, signal.signal_category),
+          url && h('a', {
+            href: url, target: '_blank', rel: 'noreferrer',
+            className: 'text-[10px] font-mono ml-auto hover:underline',
+            style: { color: '#B5F33D' }
+          }, 'source ↗')
+        )
+      );
+    }
+
+    function EmptySourcePlaceholder({ label, color }) {
+      return h('div', {
+        className: 'border-l-2 pl-4 py-3',
+        style: { borderColor: color, opacity: 0.35 }
+      },
+        h('div', {
+          className: 'text-[10px] uppercase tracking-widest font-mono mb-1',
+          style: { color }
+        }, label),
+        h('div', {
+          className: 'text-xs italic',
+          style: { color: '#5A7048' }
+        }, 'No findings in this category')
+      );
+    }
+
+    // ============================================================
+    // DETAIL PANEL
+    // ============================================================
+    function DetailPanel({ lead }) {
+      const leadSignals = useMemo(() =>
+        SIGNALS_DATA.filter(s => s.lead_id === lead.lead_id)
+          .sort((a, b) => (b.normalized_signal_score || 0) - (a.normalized_signal_score || 0)),
+        [lead.lead_id]
+      );
+
+      const tier = TIER_CONFIG[lead.priority_tier] || TIER_CONFIG['Tier 3 / Watchlist'];
+      const bucketColor = BUCKET_COLORS[lead.primary_fziomed_bucket] || '#94A3B8';
+      const isNew = lead.priority_tier === 'NEW';
+      const isSilent = lead.priority_tier === 'SILENT';
+      const noRank = isNew || isSilent;
+
+      const interpretations = (lead.manager_interpretation || '')
+        .split(/;\s*(?=[A-Z])/)
+        .map(s => s.replace(/Manager context:.*$/, '').trim())
+        .filter(Boolean);
+
+      return h('div', {
+        className: 'h-full overflow-y-auto',
+        style: { background: '#0D1F0A' }
+      },
+        // Header band
+        h('div', {
+          className: 'relative px-8 pt-8 pb-6',
+          style: { background: 'linear-gradient(180deg, rgba(181,243,61,0.04) 0%, transparent 100%)' }
+        },
+          h('div', { className: 'flex items-start justify-between gap-6 mb-6' },
+            h('div', { className: 'min-w-0' },
+              h('div', { className: 'flex items-center gap-3 mb-2 flex-wrap' },
+                !noRank && h('span', {
+                  className: 'text-xs font-mono tracking-widest',
+                  style: { color: '#B5F33D' }
+                }, 'RANK #' + String(lead.rank).padStart(2, '0')),
+                h('span', {
+                  className: 'text-xs font-mono px-2 py-0.5 rounded-sm',
+                  style: { background: tier.color + '22', color: tier.color }
+                }, tier.label),
+                lead.primary_fziomed_bucket && h('span', {
+                  className: 'text-xs font-mono',
+                  style: { color: bucketColor }
+                }, '● ', lead.primary_fziomed_bucket)
+              ),
+              h('h1', {
+                className: 'text-4xl font-bold text-white tracking-tight mb-1 leading-tight'
+              }, lead.lead_company),
+              lead.lead_domain
+                ? h('a', {
+                    href: 'https://' + lead.lead_domain,
+                    target: '_blank', rel: 'noreferrer',
+                    className: 'text-sm font-mono hover:underline',
+                    style: { color: '#7A8B6A' }
+                  }, lead.lead_domain, ' ↗')
+                : h('div', {
+                    className: 'text-sm font-mono',
+                    style: { color: '#7A8B6A' }
+                  }, lead.lead_type || '')
+            )
+          ),
+          h('div', {
+            className: 'grid grid-cols-2 gap-6 pt-4 border-t',
+            style: { borderColor: 'rgba(255,255,255,0.06)' }
+          },
+            h('div', null,
+              h('div', {
+                className: 'text-[10px] uppercase tracking-widest font-mono mb-2',
+                style: { color: '#7A8B6A' }
+              }, 'Priority Score'),
+              h(ScoreBar, {
+                score: lead.consolidated_priority_score,
+                emptyLabel: isSilent ? 'No score this window' : 'Not scored — context only'
+              })
+            ),
+            h('div', null,
+              h('div', {
+                className: 'text-[10px] uppercase tracking-widest font-mono mb-2',
+                style: { color: '#7A8B6A' }
+              }, 'Signals Found'),
+              h('div', {
+                className: 'text-3xl font-bold tabular-nums text-white'
+              }, lead.number_of_unique_signals || 0)
+            )
+          )
+        ),
+
+        // SILENT-specific message
+        isSilent && h('div', { className: 'px-8 py-8' },
+          h('div', {
+            className: 'p-6 rounded-sm',
+            style: { background: 'rgba(71,85,105,0.08)', border: '1px dashed rgba(71,85,105,0.3)' }
+          },
+            h('div', {
+              className: 'text-[10px] uppercase tracking-widest font-mono mb-3',
+              style: { color: '#94A3B8' }
+            }, '── No signals captured this window'),
+            h('p', {
+              className: 'text-sm leading-relaxed',
+              style: { color: '#A0B090' }
+            }, 'This lead is on the watchlist but produced no signals across Company News, Topic News, or Papers / Funding during the current observation window. Continued monitoring; no action required at this time.')
+          )
+        ),
+
+        // Strongest signal — hidden for SILENT
+        !isSilent && lead.strongest_signal_headline_or_title && h('div', { className: 'px-8 py-6' },
+          h(SectionHeader, null, 'Strongest Signal'),
+          h('div', {
+            className: 'p-5 rounded-sm',
+            style: { background: 'rgba(181,243,61,0.05)', border: '1px solid rgba(181,243,61,0.15)' }
+          },
+            h('div', {
+              className: 'text-xs font-mono mb-2',
+              style: { color: '#B5F33D' }
+            }, formatDate(lead.strongest_signal_date)),
+            h('div', {
+              className: 'text-base text-white leading-snug mb-3'
+            }, lead.strongest_signal_headline_or_title),
+            lead.strongest_signal_url && h('a', {
+              href: lead.strongest_signal_url,
+              target: '_blank', rel: 'noreferrer',
+              className: 'text-[11px] font-mono hover:underline',
+              style: { color: '#B5F33D' }
+            }, 'source ↗')
+          )
+        ),
+
+        // Signals by source — hidden for SILENT
+        !isSilent && h('div', { className: 'px-8 py-4' },
+          h(SectionHeader, null, 'Signals by Source (' + leadSignals.length + ')'),
+          h('div', { className: 'space-y-6' },
+            SOURCE_CONFIG.map(src => {
+              const sigs = leadSignals.filter(s => getSignalSource(s).label === src.label);
+              return h('div', { key: src.label },
+                h('div', { className: 'flex items-baseline gap-2 mb-2' },
+                  h('span', {
+                    className: 'text-[10px] uppercase tracking-widest font-mono',
+                    style: { color: src.color }
+                  }, src.label),
+                  h('span', {
+                    className: 'text-[10px] font-mono',
+                    style: { color: '#5A7048' }
+                  }, sigs.length + ' ' + (sigs.length === 1 ? 'finding' : 'findings'))
+                ),
+                h('div', { className: 'space-y-1' },
+                  sigs.length > 0
+                    ? sigs.map((sig, i) => h(SignalRow, { key: i, signal: sig }))
+                    : h(EmptySourcePlaceholder, { label: src.label, color: src.color })
+                )
+              );
+            })
+          )
+        ),
+
+        // FZIOMED relevance
+        interpretations.length > 0 && h('div', { className: 'px-8 py-4 pb-8' },
+          h(SectionHeader, null, 'FZIOMED Relevance'),
+          h('ul', { className: 'space-y-3' },
+            interpretations.map((interp, i) =>
+              h('li', {
+                key: i,
+                className: 'text-sm text-white/75 leading-relaxed pl-4 border-l',
+                style: { borderColor: 'rgba(181,243,61,0.2)' }
+              }, interp)
+            )
+          )
+        )
+      );
+    }
+
+    // ============================================================
+    // MAIN APP
+    // ============================================================
+    function App() {
+      const [selectedId, setSelectedId] = useState(PRIORITY_DATA[0] && PRIORITY_DATA[0].lead_id);
+      const [tierFilter, setTierFilter] = useState('all');
+      const [bucketFilter, setBucketFilter] = useState('all');
+
+      const buckets = useMemo(() =>
+        [...new Set(PRIORITY_DATA.map(l => l.primary_fziomed_bucket).filter(Boolean))],
+        []
+      );
+
+      const filtered = useMemo(() =>
+        PRIORITY_DATA.filter(l => {
+          if (tierFilter !== 'all' && l.priority_tier !== tierFilter) return false;
+          if (bucketFilter !== 'all' && l.primary_fziomed_bucket !== bucketFilter) return false;
+          return true;
+        }),
+        [tierFilter, bucketFilter]
+      );
+
+      const selected = PRIORITY_DATA.find(l => l.lead_id === selectedId);
+
+      const tierCounts = useMemo(() => {
+        const c = { 'Tier 1 / Highest priority': 0, 'Tier 2 / High priority': 0, 'Tier 3 / Watchlist': 0, 'NEW': 0, 'SILENT': 0 };
+        PRIORITY_DATA.forEach(l => { if (c[l.priority_tier] !== undefined) c[l.priority_tier]++; });
+        return c;
+      }, []);
+
+      return h('div', { className: 'min-h-screen w-full' },
+        // Decorative squares (top right only)
+        h('div', {
+          className: 'fixed top-0 right-0 w-32 h-32 pointer-events-none',
+          style: { background: '#B5F33D', opacity: 0.9 }
+        }),
+        h('div', {
+          className: 'fixed top-32 right-32 w-16 h-16 pointer-events-none',
+          style: { background: '#B5F33D', opacity: 0.5 }
+        }),
+
+        // Top bar
+        h('header', {
+          className: 'relative z-10 px-8 py-5 flex items-center border-b',
+          style: {
+            borderColor: 'rgba(255,255,255,0.06)',
+            background: 'rgba(8,21,5,0.8)',
+            backdropFilter: 'blur(8px)'
+          }
+        },
+          h('div', { className: 'flex items-center gap-4' },
+            h('div', { className: 'flex items-center gap-2' },
+              h('div', { className: 'grid grid-cols-2 gap-0.5' },
+                h('div', { className: 'w-2 h-2', style: { background: '#B5F33D' } }),
+                h('div', { className: 'w-2 h-2', style: { background: '#B5F33D', opacity: 0.4 } }),
+                h('div', { className: 'w-2 h-2', style: { background: '#B5F33D', opacity: 0.4 } }),
+                h('div', { className: 'w-2 h-2', style: { background: '#B5F33D' } })
+              ),
+              h('span', { className: 'text-sm font-semibold tracking-tight' }, 'wearepalta')
+            ),
+            h('div', { className: 'h-4 w-px', style: { background: 'rgba(255,255,255,0.15)' } }),
+            h('span', { className: 'text-sm font-semibold tracking-tight text-white' }, 'FZIOMED')
+          )
+        ),
+
+        // Hero band
+        h('section', { className: 'relative z-10 px-8 py-12 max-w-[1600px] mx-auto' },
+          h('div', { className: 'mb-8' },
+            h('h1', {
+              className: 'text-6xl font-bold tracking-tight leading-[1] mb-5'
+            },
+              'Signaling ',
+              h('span', { style: { color: '#B5F33D' } }, 'Radar'),
+              '.'
+            ),
+            h('p', {
+              className: 'text-base max-w-xl leading-relaxed',
+              style: { color: '#A0B090' }
+            }, "Custom signals harvested across company news, scientific funding, and market topics.")
+          ),
+          h('div', { className: 'grid grid-cols-12 gap-8 items-end' },
+            // Left: stats
+            h('div', { className: 'col-span-4 flex flex-col gap-2 text-xs font-mono' },
+              h('div', { className: 'flex items-baseline gap-3' },
+                h('span', {
+                  className: 'tabular-nums text-2xl font-bold',
+                  style: { color: '#B5F33D' }
+                }, PRIORITY_DATA.length),
+                h('span', {
+                  className: 'uppercase tracking-widest',
+                  style: { color: '#7A8B6A' }
+                }, 'leads')
+              ),
+              h('div', { className: 'flex items-baseline gap-3' },
+                h('span', { className: 'tabular-nums text-2xl font-bold text-white' }, SIGNALS_DATA.length),
+                h('span', {
+                  className: 'uppercase tracking-widest',
+                  style: { color: '#7A8B6A' }
+                }, 'signals')
+              ),
+              h('div', { className: 'flex items-baseline gap-3' },
+                h('span', {
+                  className: 'tabular-nums text-sm font-semibold text-white/80'
+                }, '2025-04 → 2026-05'),
+                h('span', {
+                  className: 'uppercase tracking-widest',
+                  style: { color: '#7A8B6A' }
+                }, 'window')
+              )
+            ),
+            // Right: tier breakdown
+            h('div', { className: 'col-span-8 grid grid-cols-5 gap-3' },
+              Object.entries(tierCounts).map(([tier, count]) => {
+                const cfg = TIER_CONFIG[tier];
+                return h('div', {
+                  key: tier,
+                  className: 'p-4',
+                  style: { background: 'rgba(181,243,61,0.03)', borderTop: '2px solid ' + cfg.color }
+                },
+                  h('div', {
+                    className: 'text-[10px] uppercase tracking-widest font-mono mb-2',
+                    style: { color: cfg.color }
+                  }, cfg.label),
+                  h('div', { className: 'text-3xl font-bold tabular-nums' }, count),
+                  h('div', {
+                    className: 'text-[10px] font-mono mt-1',
+                    style: { color: '#7A8B6A' }
+                  }, cfg.short.toLowerCase())
+                );
+              })
+            )
+          )
+        ),
+
+        // Filters
+        h('section', { className: 'relative z-10 px-8 pb-4 max-w-[1600px] mx-auto' },
+          h('div', { className: 'flex items-center gap-2 flex-wrap' },
+            h('span', {
+              className: 'text-[10px] uppercase tracking-widest font-mono mr-2',
+              style: { color: '#7A8B6A' }
+            }, 'Tier:'),
+            [['all', 'All'], ...Object.entries(TIER_CONFIG).map(([k, v]) => [k, v.short])].map(([val, label]) =>
+              h('button', {
+                key: val,
+                onClick: () => setTierFilter(val),
+                className: 'text-xs font-mono px-2.5 py-1 rounded-sm transition-all',
+                style: {
+                  background: tierFilter === val ? '#B5F33D' : 'rgba(255,255,255,0.04)',
+                  color: tierFilter === val ? '#081505' : '#A0B090',
+                }
+              }, label)
+            ),
+            h('span', {
+              className: 'w-px h-4 mx-2',
+              style: { background: 'rgba(255,255,255,0.1)' }
+            }),
+            h('span', {
+              className: 'text-[10px] uppercase tracking-widest font-mono mr-2',
+              style: { color: '#7A8B6A' }
+            }, 'Bucket:'),
+            h('button', {
+              onClick: () => setBucketFilter('all'),
+              className: 'text-xs font-mono px-2.5 py-1 rounded-sm transition-all',
+              style: {
+                background: bucketFilter === 'all' ? '#B5F33D' : 'rgba(255,255,255,0.04)',
+                color: bucketFilter === 'all' ? '#081505' : '#A0B090',
+              }
+            }, 'All'),
+            buckets.map(b =>
+              h('button', {
+                key: b,
+                onClick: () => setBucketFilter(b),
+                className: 'text-xs font-mono px-2.5 py-1 rounded-sm transition-all',
+                style: {
+                  background: bucketFilter === b ? '#B5F33D' : 'rgba(255,255,255,0.04)',
+                  color: bucketFilter === b ? '#081505' : '#A0B090',
+                }
+              }, b)
+            )
+          )
+        ),
+
+        // Master-Detail
+        h('section', { className: 'relative z-10 px-8 pb-12 max-w-[1600px] mx-auto' },
+          h('div', {
+            className: 'grid grid-cols-12 gap-6',
+            style: { minHeight: '70vh' }
+          },
+            // Left
+            h('div', { className: 'col-span-5' },
+              h('div', {
+                className: 'rounded-sm overflow-hidden',
+                style: { background: 'rgba(13,31,10,0.5)', border: '1px solid rgba(255,255,255,0.06)' }
+              },
+                h('div', {
+                  className: 'flex items-center justify-between px-5 py-3 border-b',
+                  style: { borderColor: 'rgba(255,255,255,0.06)' }
+                },
+                  h('div', {
+                    className: 'text-[10px] uppercase tracking-widest font-mono',
+                    style: { color: '#7A8B6A' }
+                  }, 'Ranking · ' + filtered.length + ' of ' + PRIORITY_DATA.length),
+                  h('div', {
+                    className: 'text-[10px] uppercase tracking-widest font-mono',
+                    style: { color: '#7A8B6A' }
+                  }, 'Score')
+                ),
+                h('div', {
+                  className: 'divide-y',
+                  style: { borderColor: 'rgba(255,255,255,0.04)' }
+                },
+                  filtered.map(lead =>
+                    h(LeadCard, {
+                      key: lead.lead_id,
+                      lead: lead,
+                      isSelected: lead.lead_id === selectedId,
+                      onClick: () => setSelectedId(lead.lead_id),
+                    })
+                  ),
+                  filtered.length === 0 && h('div', {
+                    className: 'px-5 py-12 text-center text-sm',
+                    style: { color: '#7A8B6A' }
+                  }, 'No leads match the current filters.')
+                )
+              )
+            ),
+            // Right
+            h('div', { className: 'col-span-7' },
+              h('div', {
+                className: 'rounded-sm overflow-hidden h-full',
+                style: { background: 'rgba(13,31,10,0.5)', border: '1px solid rgba(255,255,255,0.06)' }
+              },
+                selected
+                  ? h(DetailPanel, { lead: selected })
+                  : h('div', {
+                      className: 'flex items-center justify-center h-full text-sm',
+                      style: { color: '#7A8B6A' }
+                    }, 'Select a lead to view details')
+              )
+            )
+          )
+        ),
+
+        // Footer
+        h('footer', {
+          className: 'relative z-10 px-8 py-6 border-t',
+          style: { borderColor: 'rgba(255,255,255,0.06)' }
+        },
+          h('div', {
+            className: 'max-w-[1600px] mx-auto flex items-center justify-between text-[10px] uppercase tracking-widest font-mono',
+            style: { color: '#5A7048' }
+          },
+            h('span', null, 'FZIOMED Signaling Radar · MVP v1'),
+            h('span', null,
+              'powered by ',
+              h('span', { style: { color: '#B5F33D' } }, 'wearepalta'),
+              ' 🥑'
+            )
+          )
+        )
+      );
+    }
+
+    // Boot
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(h(App));
+  </script>
+</body>
+</html>
